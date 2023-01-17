@@ -16,7 +16,7 @@ def receive_message():
     consumer.subscribe(topics)
 
     for msg in consumer:
-        print("\n>>> {}".format(msg.value.decode()))
+        print("\n>>> [{}] {}".format(msg.key.decode(), msg.value.decode()))
 
 thread = threading.Thread(target=receive_message, daemon=True)
 thread.start()
@@ -33,9 +33,9 @@ while True:
 
     if destType == 'U':
         topic = 'direct-' + dest
-        msg = '[{}]: {}'.format(sys.argv[1], msg)
+        sender = sys.argv[1]
     else:  # destType == 'G'
         topic = 'group-' + dest
-        msg = '[{}]: {}'.format(dest, msg)
+        sender = '{} em {}'.format(sys.argv[1], dest)
 
-    producer.send(topic, value=msg.encode())
+    producer.send(topic, key=sender.encode(), value=msg.encode())
